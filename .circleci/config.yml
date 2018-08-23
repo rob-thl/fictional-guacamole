@@ -34,7 +34,7 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
 
       # run tests!
-      - run: CI=true yarn test --coverage --reporters=default --reporters=jest-junit
+      - run: CI=true yarn test --coverage --reporters=default --reporters=jest-junit --coverageReporters=text-lcov | ./node_modules/coveralls/bin/coveralls.js
 
       - store_test_results:
           path: test-results
