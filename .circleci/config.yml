@@ -4,55 +4,75 @@
 #
 version: 2
 jobs:
-  test:
+  checkout_code:
     docker:
-      # specify the version you desire here
-      - image: circleci/node:10
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mongo:3.4.4
-
-    working_directory: ~/repo
-
+      - image: circleci/node:latest
+    working_directory: ~/circleci-deployment
     steps:
       - checkout
-
-      # Download and cache dependencies
+      - attach_workspace:
+          at: ~/circleci-deployment
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
-
+            - yarn-cache-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-cache-{{ .Branch }}
+            - yarn-cache-
       - run: yarn install
-
       - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
-
-      # run tests!
-      - run: CI=true yarn test --coverage --reporters=default --reporters=jest-junit --coverageReporters=text-lcov | ./node_modules/coveralls/bin/coveralls.js
-
-      - store_test_results:
-          path: test-results
-  deploy:
+          key: yarn-cache-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          paths: node_modules
+      - persist_to_workspace:
+          root: .
+          paths: .
+  test_and_report:
+    docker:
+      - image: circleci/node:latest
+    working_directory: ~/circleci-deployment
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
-      - run: yarn build
-      - run: surge ./build
+      - attach_workspace:
+        at: ~/circleci-deployment
+      - run: CI=true yarn test --coverage --reporters=default --reporters=jest-junit --coverageReporters=text-lcov | ./node_modules/coveralls/bin/coveralls.js
+      - store_artifacts:
+          path: ./test-results
+  build:
+    docker:
+      - image: circleci/node:latest
+    working_directory: ~/circleci-deployment
+    steps:
+      - attach_workspace:
+          at: ~/circleci-deployment
+      - run: yarn install
+      - run:
+        name: yarn build
+  deployment:
+    docker:
+      - image: circleci/node:latest
+    working_directory: ~/circleci-deployment
+    steps:
+      - attach_workspace:
+          at: ~/circleci-deployment
+      - run: yarn install
+      - deploy:
+        name: Deploy & Alias.
+        command: yarn run deploy
+
 workflows:
   version: 2
-  build_and_test:
+  test_deploy:
     jobs:
-      - test
-      - deploy:
+      - checkout_code
+      - test_and_report:
         requires:
-          - test
+          - checkout_code
+      - build:
+        requires:
+          - test_and_report
+      
+      - deployment:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - master
+                - production

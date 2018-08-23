@@ -6683,7 +6683,7 @@ surge-ignore@0.2.0:
 
 surge@^0.20.1:
   version "0.20.1"
-  resolved "https://tourismholdinglimited.jfrog.io/tourismholdinglimited/api/npm/npm-virtual/surge/-/surge-0.20.1.tgz#3abd65f7333449de9f0642b76d5513be7eb4592b"
+  resolved "https://tourismholdinglimited.jfrog.io/tourismholdinglimited/api/npm/npm-cosmos-virtual/surge/-/surge-0.20.1.tgz#3abd65f7333449de9f0642b76d5513be7eb4592b"
   dependencies:
     cli-table2 "^0.2.0"
     du "0.1.0"
