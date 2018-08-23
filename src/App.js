@@ -1,9 +1,16 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import logo from "./logo.svg";
+import "./App.css";
 
 class App extends Component {
+  state = {
+    message: ""
+  };
+  setMessage = msg => {
+    this.setState({ message: msg });
+  };
   render() {
+    const { message } = this.state;
     return (
       <div className="App">
         <header className="App-header">
@@ -13,6 +20,10 @@ class App extends Component {
         <p className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.
         </p>
+        <button id="clickme" onClick={() => this.setMessage("Ive been clicked!")}>
+          click me
+        </button>
+        <p id="msg">{message}</p>
       </div>
     );
   }

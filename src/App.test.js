@@ -1,9 +1,17 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
+import React from "react";
+import ReactDOM from "react-dom";
+import TestRenderer from "react-test-renderer";
+import ReactTestUtils from "react-dom/test-utils";
+import App from "./App";
 
-it('renders without crashing', () => {
-  const div = document.createElement('div');
+it("renders without crashing", () => {
+  const div = document.createElement("div");
   ReactDOM.render(<App />, div);
   ReactDOM.unmountComponentAtNode(div);
+});
+
+it("sets the message", () => {
+  const renderer = TestRenderer.create(<App />);
+  const result = renderer.root.find(item => item.props.id === "msg");
+  expect(result.type).toEqual("q");
 });
