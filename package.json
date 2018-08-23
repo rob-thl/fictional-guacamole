@@ -94,7 +94,8 @@
   "devDependencies": {
     "coveralls": "^3.0.2",
     "jest-junit": "^5.1.0",
-    "react-test-renderer": "^16.4.2"
+    "react-test-renderer": "^16.4.2",
+    "surge": "^0.20.1"
   },
   "jest-junit": {
     "output": "./test-results/junit.xml"
