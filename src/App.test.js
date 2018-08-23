@@ -13,5 +13,5 @@ it("renders without crashing", () => {
 it("sets the message", () => {
   const renderer = TestRenderer.create(<App />);
   const result = renderer.root.find(item => item.props.id === "msg");
-  expect(result.type).toEqual("q");
+  expect(result.type).toEqual("p");
 });
